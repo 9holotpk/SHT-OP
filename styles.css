@@ -1,0 +1,41 @@
+.options {
+    font: 1em sans-serif; 
+    color: rgb(165, 164, 164);
+    cursor: pointer;
+}
+.options:hover{
+    color: rgb(0, 0, 0);
+    text-decoration-line: underline;
+}
+
+.textOption {
+    font: 1em sans-serif; 
+    color: rgb(85, 85, 85);
+    cursor: pointer;
+}
+
+.textOptionHelp {
+    font: 0.9em sans-serif; 
+    color: rgb(185, 57, 57);
+}
+
+.border {
+    border: 1px #e1e4e8 solid !important;
+}
+
+.version {
+    font: 0.75em 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    color: gray;
+}
+
+#bodyPopup {
+    width: 18em;
+}
+
+#shareX {
+    height: 2em;
+}
+
+#url {
+    width: 14em;
+}
