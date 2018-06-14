@@ -2,6 +2,7 @@
 // NOTE:    Click to Shorten URL
 // UPDATE:  13/06/2018  - Copy Add-On from SHT-FF ver. 1.3.1
 //                      - Edit and Optimize for Opera Add-On.
+//          14/06/2018  - Optimize update and Bug fixed.
 
 
 // # Event
@@ -20,13 +21,11 @@ function onGot(page) {
   chrome.tabs.query({ 'active': true, 'lastFocusedWindow': true }, function (tabs) {
     TAB_URL = tabs[0].url;
     TITLE = tabs[0].title;
+    // console.log('Page: (' + tabs[0].id + ') ' + TITLE);
     if (TAB_URL) {
       let URL_RES = TAB_URL.substring(0, 4);
       if (URL_RES === 'http') {
-        const getting = chrome.extension.getBackgroundPage();
-        getting.shortenLink(TAB_URL, TITLE);
-        
-
+        chrome.runtime.sendMessage({script: "shortenLink", tab_url: TAB_URL, title: TITLE});
       } else {
         let load = document.getElementById("loading");
         let faq = document.getElementById("faq");

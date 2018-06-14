@@ -2,6 +2,7 @@
 // NOTE:    Click to Shorten URL
 // UPDATE:  13/06/2018  - Copy Add-On from SHT-FF ver. 1.3.1
 //                      - Edit and Optimize for Opera Add-On.
+//          14/06/2018  - Optimize update and Bug fixed.
 
 // API
 const API_KEY = 'AIzaSyASAQzCena-R-4DQUwDIosyLeNl68C7p0k';
@@ -10,8 +11,12 @@ const API_URL = 'https://firebasedynamiclinks.googleapis.com/v1/shortLinks';
 let TAB_URL = '';
 let TITLE = '';
 
-
-
+chrome.runtime.onMessage.addListener(function (request) {
+  let resultX = request;
+  if (resultX.script === "shortenLink") {
+    shortenLink(resultX.tab_url, resultX.title);
+  }
+});
 
 function onError(error) {
   console.log(`Error: ${error}`);
