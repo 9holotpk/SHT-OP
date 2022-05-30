@@ -1,41 +1,219 @@
-.options {
-    font: 1em sans-serif; 
-    color: rgb(165, 164, 164);
-    cursor: pointer;
-}
-.options:hover{
-    color: rgb(0, 0, 0);
-    text-decoration-line: underline;
+/* 
+DEV. EXTENTION BY iTON => STYLE
+NOTE:    Click to Shorten URL
+UPDATE: 26/11/2018  - Update #url #bodyPopup input size.
+        13/06/2019  - Add dark mode.
+*/
+
+body {
+  width: 255px;
 }
 
-.textOption {
-    font: 1em sans-serif; 
-    color: rgb(85, 85, 85);
-    cursor: pointer;
+#input {
+  text-align: center;
+  align-content: center;
+  justify-content: center;
 }
 
-.textOptionHelp {
-    font: 0.9em sans-serif; 
-    color: rgb(185, 57, 57);
+.darkmode .result {
+  background-color: black;
+  border: 1px solid darkgray;
+  color: #e1e4e8;
+}
+
+.darkmode .result:disabled {
+  background-color: dimgray;
+  border: 1px solid darkgray;
+  color: #e1e4e8;
+}
+
+.darkmode input:focus-within {
+  background: black;
+  background-color: black;
+  border: 1px solid darkgray;
+  color: #e1e4e8;
+}
+
+label:hover {
+  cursor: pointer;
+}
+
+.canvas-img:hover {
+  cursor: pointer;
+}
+
+.icon-options {
+  cursor: pointer;
+  color: rgb(165, 164, 164);
+}
+
+.icon-options:hover {
+  color: rgb(0, 0, 0) !important;
+}
+
+.icon-options:hover svg path{
+  fill: rgb(0, 0, 0) !important;
+}
+
+.icon-options svg path{
+  fill:  rgb(165, 164, 164) !important;
+}
+
+.darkmode label small {
+  color: rgb(206, 206, 206);
+}
+
+.darkmode .icon-options:hover {
+  color: rgb(242, 245, 247) !important;
+}
+
+.darkmode .icon-options:hover svg path{
+  fill: rgb(242, 245, 247) !important;
+}
+
+.darkmode .card {
+  background-color: rgb(0, 0, 0) !important;
+}
+
+.darkmode .spinner-border {
+  color: rgb(255, 255, 255);
+}
+
+.darkmode hr {
+  border-color: rgb(182, 182, 182);
 }
 
 .border {
-    border: 1px #e1e4e8 solid !important;
+  border: 1px #e1e4e8 solid !important;
+  border-radius: 5px;
 }
 
-.version {
+/* .version {
     font: 0.75em 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     color: gray;
-}
+} */
 
-#bodyPopup {
-    width: 18em;
-}
-
-#shareX {
+/* #shareX {
     height: 2em;
-}
+} */
 
 #url {
-    width: 14em;
+  width: 12em;
 }
+
+.darkmode {
+  background-color: rgb(33, 33, 33);
+}
+
+svg path,
+svg rect {
+  fill: rgb(19, 18, 18);
+}
+
+.darkmode svg path,
+svg rect {
+  fill: rgb(247, 247, 247);
+}
+
+#my-icon .circle {
+  animation: circle-animation 0.5s ease-out forwards;
+  opacity: 0;
+  transform: scale(0.9);
+  transform-origin: center;
+}
+
+@keyframes circle-animation {
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+#my-icon .checkmark {
+  animation: checkmark-animation 1s ease-out forwards;
+  stroke-dasharray: 400;
+  stroke-dashoffset: 400;
+  stroke: #cfd8dc;
+  transform-origin: center;
+}
+
+@keyframes checkmark-animation {
+  40% {
+    transform: scale(1);
+  }
+  55% {
+    stroke: #cfd8dc;
+    transform: scale(1.2);
+  }
+  70% {
+    transform: scale(1);
+  }
+  100% {
+    stroke-dashoffset: 0;
+    transform: scale(1);
+    stroke: #21b587;
+  }
+}
+
+input {
+  border-radius: 5px;
+  background-color: lightgrey;
+  border: 3px solid lightgrey;
+}
+
+.input_h {
+  width: 60%;
+}
+
+/* .shareY {
+    padding: 5px;
+    margin-right: 5px;
+    text-align: center;
+    align-content: center;
+    justify-content: center;
+    
+} */
+
+.cur-pointer {
+  cursor: pointer;
+}
+
+.cur-pointer:hover .copy-ready {
+  display: none;
+}
+
+.cur-pointer .copy-on {
+  display: none;
+}
+
+.cur-pointer:hover .copy-on {
+  display: inline;
+}
+
+a.share-to-facebook:hover label {
+  color: rgb(24, 119, 242) !important;
+}
+
+a.share-to-facebook:hover svg path,
+svg rect {
+  fill: rgb(24, 119, 242) !important;
+}
+
+a.share-to-twitter:hover label {
+  color: rgb(29, 155, 240) !important;
+}
+
+a.share-to-twitter:hover svg path,
+svg rect {
+  fill: rgb(29, 155, 240) !important;
+}
+.input-url-matter {
+  position: relative;
+}
+
+.input-url-matter button {
+  position: absolute;
+  top: 0px;
+  right: 0px;
+}
+
