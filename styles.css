@@ -38,10 +38,6 @@ label:hover {
   cursor: pointer;
 }
 
-.canvas-img:hover {
-  cursor: pointer;
-}
-
 .icon-options {
   cursor: pointer;
   color: rgb(165, 164, 164);
@@ -51,12 +47,12 @@ label:hover {
   color: rgb(0, 0, 0) !important;
 }
 
-.icon-options:hover svg path{
+.icon-options:hover svg path {
   fill: rgb(0, 0, 0) !important;
 }
 
-.icon-options svg path{
-  fill:  rgb(165, 164, 164) !important;
+.icon-options svg path {
+  fill: rgb(165, 164, 164) !important;
 }
 
 .darkmode label small {
@@ -67,7 +63,7 @@ label:hover {
   color: rgb(242, 245, 247) !important;
 }
 
-.darkmode .icon-options:hover svg path{
+.darkmode .icon-options:hover svg path {
   fill: rgb(242, 245, 247) !important;
 }
 
@@ -105,6 +101,8 @@ label:hover {
   background-color: rgb(33, 33, 33);
 }
 
+.darkmode 
+
 svg path,
 svg rect {
   fill: rgb(19, 18, 18);
@@ -141,13 +139,16 @@ svg rect {
   40% {
     transform: scale(1);
   }
+
   55% {
     stroke: #cfd8dc;
     transform: scale(1.2);
   }
+
   70% {
     transform: scale(1);
   }
+
   100% {
     stroke-dashoffset: 0;
     transform: scale(1);
@@ -207,6 +208,7 @@ a.share-to-twitter:hover svg path,
 svg rect {
   fill: rgb(29, 155, 240) !important;
 }
+
 .input-url-matter {
   position: relative;
 }
@@ -217,3 +219,70 @@ svg rect {
   right: 0px;
 }
 
+.icon-options:hover .rotate {
+  animation: rotation 8s infinite linear;
+}
+
+@keyframes rotation {
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(359deg);
+  }
+}
+
+.containerqr {
+  position: relative;
+  width: 100%;
+}
+
+.image canvas {
+  opacity: 1;
+  width: 100%;
+  height: auto;
+  transition: .5s ease;
+  backface-visibility: hidden;
+}
+
+.middle {
+  transition: .5s ease;
+  opacity: 0;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  -ms-transform: translate(-50%, -50%);
+  text-align: center;
+}
+
+.containerqr:hover .image canvas {
+  opacity: 0.3 !important;
+}
+
+.containerqr:hover .middle {
+  opacity: 1;
+}
+
+.download {
+  /* background-color: #00f2a9 !important; */
+  color: white !important;
+  font-size: 16px;
+  padding: 16px 32px;
+}
+
+
+.download svg path,
+svg rect {
+  /* background-color: #00f2a9 !important;
+  color: white !important; */
+  fill: black !important;
+}
+
+.border-10 {
+  border-style: solid;
+  /* border-width: 5px; */
+  background-color: white;
+  border-color: white;
+}

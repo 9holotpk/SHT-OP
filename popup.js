@@ -1,28 +1,41 @@
 // # Event
 document.addEventListener("DOMContentLoaded", initialLoad);
-document.getElementById("qrcode-canvas").addEventListener("click", saveQRCode);
+document.getElementById("saveqrcodebt").addEventListener("click", saveQRCode);
 document.getElementById("optionsX").addEventListener("click", showSettings);
 document.getElementById("sharebt").addEventListener("click", saveSettings);
 document.getElementById("qrcbt").addEventListener("click", saveSettings);
 document.getElementById("darkmode").addEventListener("click", saveSettings);
+document.getElementById("lightmode").addEventListener("click", saveSettings);
+document.getElementById("automode").addEventListener("click", saveSettings);
 document.getElementById("atcopy").addEventListener("click", saveSettings);
-document.getElementById("qrcodeurlbt").addEventListener("click", saveSettings);
 document.getElementById("complete").addEventListener("click", copy);
 document.getElementById("copped").addEventListener("click", copy);
 document.getElementById("tweetbt").addEventListener("click", shareToTW);
 document.getElementById("facebookbt").addEventListener("click", shareToFB);
+document.getElementById("donate").addEventListener("click", openDonate);
+
+document.getElementById("customqrcode").addEventListener("click", openEditLabel);
+document.getElementById("urlLabel").addEventListener("click", saveSettings);
+document.getElementById("textLabel").addEventListener("click", saveSettings);
+document.getElementById("noneLabel").addEventListener("click", saveSettings);
+
+document.addEventListener('keyup', logKey);
 
 // # Value
 let copy_now = false;
 let qrcode_url = false;
+let qrcode_text = false;
 let share_now = false;
 let urlshort = '';
 
 let tweetbt = '';
 let facebookbt = '';
+const paypalurl = 'https://paypal.me/9holo';
 
 let token = '';
 let domain = '';
+
+let customtext = '';
 
 function handleResponse(message) {
   switch (message.script) {
@@ -59,8 +72,8 @@ function handleError(error) {
 function onGot() {
   urlshort = '';
   chrome.tabs.query({ active: true, lastFocusedWindow: true }, function (tabs) {
-    TAB_URL = tabs[0].url;
-    TITLE = tabs[0].title;
+    let TAB_URL = tabs[0].url;
+    let TITLE = tabs[0].title;
     if (TAB_URL) {
       let URL_RES = TAB_URL.substring(0, 4);
       if (URL_RES === "http") {
@@ -70,7 +83,7 @@ function onGot() {
           domain: domain,
           link: TAB_URL,
           title: TITLE,
-        }, function(response) {
+        }, function (response) {
           handleResponse(response)
         });
       } else {
@@ -101,7 +114,7 @@ function initialLoad() {
   let version = document.getElementById("version");
 
   chrome.storage.local.get(
-    ["sharebutton", "qrcode", "mode", "autocopy", "qrcodeurl"],
+    ["sharebutton", "qrcode", "mode", "autocopy", "qrcodeurl", "qrcodetext", "qrcodenone", "customtext", "autotheme"],
     function (result) {
       onGotX(result);
     }
@@ -111,12 +124,12 @@ function initialLoad() {
     ["token", "domain", "expiration"],
     function (result) {
       if (!result.token || !result.domain) {
-        chrome.runtime.sendMessage({script: "get_token"}, function(response) {
+        chrome.runtime.sendMessage({ script: "get_token" }, function (response) {
           handleResponse(response)
         });
       } else {
         if (result.expiration < new Date().getTime()) {
-          chrome.runtime.sendMessage({script: "get_token"}, function(response) {
+          chrome.runtime.sendMessage({ script: "get_token" }, function (response) {
             handleResponse(response)
           });
         } else {
@@ -135,8 +148,16 @@ function onGotX(items) {
   let sharebt = document.getElementById("sharebt");
   let qrcbt = document.getElementById("qrcbt");
   let darkbt = document.getElementById("darkmode");
+  let lightbt = document.getElementById("lightmode");
+  let autobt = document.getElementById("automode");
   let atcopy = document.getElementById("atcopy");
-  let qrcodeurlbt = document.getElementById("qrcodeurlbt");
+  let urlLabel = document.getElementById("urlLabel");
+  let textLabel = document.getElementById("textLabel");
+  let noneLabel = document.getElementById("noneLabel");
+
+  customtext = items.customtext ? items.customtext : 'Scan Me';
+  document.getElementById('customtext').value = customtext;
+  document.getElementById('counttext').innerHTML = (15 - customtext.length).toString();
 
   if (items.sharebutton) {
     sharebt.checked = items.sharebutton.value;
@@ -157,22 +178,78 @@ function onGotX(items) {
     let show_qrc = document.getElementById("qrcX");
     if (items.qrcode.value) {
       show_qrc.style.display = "block";
+      document.getElementById("customqrcode").style.display = "block";
     } else {
       show_qrc.style.display = "none";
+      document.getElementById("customqrcode").style.display = "none";
     }
   } else {
     qrcbt.checked = true;
   }
 
-  if (items.mode) {
-    darkbt.checked = items.mode.value;
-    if (items.mode.value) {
-      document.getElementById("theme").classList.add("darkmode");
-    } else {
+
+
+  if (items.autotheme) {
+    autobt.checked = items.autotheme.value;
+    if (items.autotheme.value) {
       document.getElementById("theme").classList.remove("darkmode");
+      document.getElementById("btnthemeauto").classList.add("active");
+
+      const darkThemeMq = window.matchMedia("(prefers-color-scheme: dark)");
+      if (darkThemeMq.matches) {
+        document.getElementById("theme").classList.add("darkmode");
+        document.getElementById("btnthemeauto").classList.add("btn-dark");
+        document.getElementById("btnthemelight").classList.add("btn-dark");
+        document.getElementById("btnthemedark").classList.add("btn-dark");
+      } else {
+        document.getElementById("theme").classList.remove("darkmode");
+        document.getElementById("btnthemeauto").classList.add("btn-light");
+        document.getElementById("btnthemelight").classList.add("btn-light");
+        document.getElementById("btnthemedark").classList.add("btn-light");
+      }
+
+    } else {
+      if (items.mode) {
+        if (items.mode.value) {
+          darkbt.checked = items.mode.value;
+          document.getElementById("theme").classList.add("darkmode");
+          document.getElementById("btnthemeauto").classList.add("btn-dark");
+          document.getElementById("btnthemelight").classList.add("btn-dark");
+          document.getElementById("btnthemedark").classList.add("btn-dark");
+
+          document.getElementById("btnthemedark").classList.add("active");
+        } else {
+          lightbt.checked = true;
+          document.getElementById("theme").classList.remove("darkmode");
+          document.getElementById("btnthemeauto").classList.add("btn-light");
+          document.getElementById("btnthemelight").classList.add("btn-light");
+          document.getElementById("btnthemedark").classList.add("btn-light");
+
+          document.getElementById("btnthemelight").classList.add("active");
+        }
+      }
     }
   } else {
-    darkbt.checked = false;
+    document.getElementById("btnthemeauto").classList.add("btn-light");
+    document.getElementById("btnthemelight").classList.add("btn-light");
+    document.getElementById("btnthemedark").classList.add("btn-light");
+
+    document.getElementById("btnthemeauto").classList.add("active");
+
+    const darkThemeMq = window.matchMedia("(prefers-color-scheme: dark)");
+    if (darkThemeMq.matches) {
+      document.getElementById("theme").classList.add("darkmode");
+      document.getElementById("btnthemeauto").classList.add("btn-dark");
+      document.getElementById("btnthemelight").classList.add("btn-dark");
+      document.getElementById("btnthemedark").classList.add("btn-dark");
+    } else {
+      document.getElementById("theme").classList.remove("darkmode");
+      document.getElementById("btnthemeauto").classList.add("btn-light");
+      document.getElementById("btnthemelight").classList.add("btn-light");
+      document.getElementById("btnthemedark").classList.add("btn-light");
+    }
+
+    autobt.checked = true;
   }
 
   if (items.autocopy) {
@@ -190,18 +267,48 @@ function onGotX(items) {
   }
 
   if (items.qrcodeurl) {
-    qrcodeurlbt.checked = items.qrcodeurl.value;
+    urlLabel.checked = items.qrcodeurl.value;
     if (items.qrcodeurl.value) {
-      qrcodeurlbt.checked = true;
+      urlLabel.checked = true;
       qrcode_url = true;
     } else {
-      qrcodeurlbt.checked = false;
+      urlLabel.checked = false;
       qrcode_url = false;
     }
   } else {
-    qrcodeurlbt.checked = true;
+    urlLabel.checked = true;
     qrcode_url = true;
   }
+
+  if (items.qrcodetext) {
+    textLabel.checked = items.qrcodetext.value;
+    const element = document.getElementById('customtext');
+
+    if (items.qrcodetext.value) {
+      textLabel.checked = true;
+      element.removeAttribute('disabled');
+      qrcode_text = true;
+    } else {
+      textLabel.checked = false;
+      element.setAttribute('disabled', '');
+      qrcode_text = false;
+    }
+  } else {
+    urlLabel.checked = true;
+    qrcode_url = true;
+  }
+
+  if (items.qrcodenone) {
+    noneLabel.checked = items.qrcodenone.value;
+    if (items.qrcodenone.value) {
+      noneLabel.checked = true;
+    } else {
+      noneLabel.checked = false;
+    }
+  } else {
+    urlLabel.checked = true;
+  }
+
 }
 
 function setURLshorten(shtURL, title, LgURL) {
@@ -286,8 +393,16 @@ function shareToFB() {
   });
 }
 
+function openDonate() {
+  chrome.tabs.create({
+    url: paypalurl
+  });
+}
+
 function showSettings() {
-  var x = document.getElementById("myDIV");
+  document.getElementById("formEditLabel").style.display = "none";
+  document.getElementById("navEditLabel").style.display = "none";
+  var x = document.getElementById("formSettings");
   if (x.style.display === "none") {
     x.style.display = "block";
   } else {
@@ -308,19 +423,80 @@ function saveSettings() {
   let qrcbt = document.getElementById("qrcbt").checked;
   let show_qrc = document.getElementById("qrcX");
   let darkbt = document.getElementById("darkmode").checked;
+  let lightbt = document.getElementById("lightmode").checked;
+  let autobt = document.getElementById("automode").checked;
   let atcopy = document.getElementById("atcopy").checked;
-  let qrcodeurlbt = document.getElementById("qrcodeurlbt").checked;
+  let urlLabel = document.getElementById("urlLabel").checked;
+  let textLabel = document.getElementById("textLabel").checked;
+  let noneLabel = document.getElementById("noneLabel").checked;
+
 
   if (qrcbt) {
     show_qrc.style.display = "block";
+    document.getElementById("customqrcode").style.display = "block";
   } else {
     show_qrc.style.display = "none";
+    document.getElementById("customqrcode").style.display = "none";
   }
 
   if (darkbt) {
     document.getElementById("theme").classList.add("darkmode");
-  } else {
+    document.getElementById("btnthemeauto").classList.add("btn-dark");
+    document.getElementById("btnthemeauto").classList.remove("btn-light");
+    document.getElementById("btnthemelight").classList.add("btn-dark");
+    document.getElementById("btnthemelight").classList.remove("btn-light");
+    document.getElementById("btnthemedark").classList.add("btn-dark");
+    document.getElementById("btnthemedark").classList.remove("btn-light");
+
+    document.getElementById("btnthemedark").classList.add("active");
+    document.getElementById("btnthemelight").classList.remove("active");
+    document.getElementById("btnthemeauto").classList.remove("active");
+  }
+
+  if (lightbt) {
     document.getElementById("theme").classList.remove("darkmode");
+    document.getElementById("btnthemeauto").classList.remove("btn-dark");
+    document.getElementById("btnthemeauto").classList.add("btn-light");
+    document.getElementById("btnthemelight").classList.remove("btn-dark");
+    document.getElementById("btnthemelight").classList.add("btn-light");
+    document.getElementById("btnthemedark").classList.remove("btn-dark");
+    document.getElementById("btnthemedark").classList.add("btn-light");
+
+    document.getElementById("btnthemedark").classList.remove("active");
+    document.getElementById("btnthemelight").classList.add("active");
+    document.getElementById("btnthemeauto").classList.remove("active");
+  }
+
+  if (autobt) {
+    document.getElementById("btnthemedark").classList.remove("active");
+    document.getElementById("btnthemelight").classList.remove("active");
+    document.getElementById("btnthemeauto").classList.add("active");
+    const darkThemeMq = window.matchMedia("(prefers-color-scheme: dark)");
+    if (darkThemeMq.matches) {
+      document.getElementById("theme").classList.add("darkmode");
+      document.getElementById("btnthemeauto").classList.add("btn-dark");
+      document.getElementById("btnthemeauto").classList.remove("btn-light");
+      document.getElementById("btnthemelight").classList.add("btn-dark");
+      document.getElementById("btnthemelight").classList.remove("btn-light");
+      document.getElementById("btnthemedark").classList.add("btn-dark");
+      document.getElementById("btnthemedark").classList.remove("btn-light");
+    } else {
+      document.getElementById("theme").classList.remove("darkmode");
+      document.getElementById("btnthemeauto").classList.remove("btn-dark");
+      document.getElementById("btnthemeauto").classList.add("btn-light");
+      document.getElementById("btnthemelight").classList.remove("btn-dark");
+      document.getElementById("btnthemelight").classList.add("btn-light");
+      document.getElementById("btnthemedark").classList.remove("btn-dark");
+      document.getElementById("btnthemedark").classList.add("btn-light");
+    }
+  }
+
+  if (textLabel) {
+    const element = document.getElementById('customtext');
+    element.removeAttribute('disabled');
+  } else {
+    const element = document.getElementById('customtext');
+    element.setAttribute('disabled', '');
   }
 
   if (sharebt) {
@@ -349,7 +525,22 @@ function saveSettings() {
 
   var qrcodeurl = {
     name: "qrcodeurl",
-    value: qrcodeurlbt,
+    value: urlLabel,
+  };
+
+  var qrcodetext = {
+    name: "qrcodetext",
+    value: textLabel,
+  };
+
+  var qrcodenone = {
+    name: "qrcodenone",
+    value: noneLabel,
+  };
+
+  var autotheme = {
+    name: "autotheme",
+    value: autobt
   };
 
   // store the objects
@@ -359,7 +550,10 @@ function saveSettings() {
       qrcode: qrcode,
       mode: mode,
       autocopy: autocopy,
-      qrcodeurl: qrcodeurl
+      qrcodeurl: qrcodeurl,
+      qrcodetext: qrcodetext,
+      qrcodenone: qrcodenone,
+      autotheme: autotheme
     },
     function () {
       // console.log('Save', mode);
@@ -371,7 +565,8 @@ function saveQRCode() {
   var canvas = document.getElementById("qrcode-canvas");
   var gh = '';
 
-  if (qrcode_url) {
+  if (qrcode_url || qrcode_text) {
+    let displaytext = qrcode_url ? urlshort : customtext;
     var canvas_draft = document.getElementById("qrcode-canvas-draft");
     var context = canvas_draft.getContext("2d");
 
@@ -385,7 +580,7 @@ function saveQRCode() {
     context.font = "20pt monospace";
     context.fillStyle = "black";
     context.textAlign = "center";
-    context.fillText(urlshort, 202, 430);
+    context.fillText(displaytext, 202, 430);
 
     gh = canvas_draft.toDataURL('png');
   } else {
@@ -397,4 +592,23 @@ function saveQRCode() {
   a.download = urlshort + '.png';
 
   a.click()
+}
+
+function openEditLabel() {
+  document.getElementById("formEditLabel").style.display = "block";
+  document.getElementById("formSettings").style.display = "none";
+  document.getElementById("navEditLabel").style.display = "inline";
+}
+
+function logKey(e) {
+  const textValue = document.getElementById('customtext').value;
+  chrome.storage.local.set(
+    {
+      customtext: textValue,
+    },
+    function () {
+      customtext = textValue ? textValue : 'Scan Me';
+      document.getElementById('counttext').innerHTML = (15 - customtext.length).toString();
+    }
+  );
 }
